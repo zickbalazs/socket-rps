@@ -1,14 +1,15 @@
 <main>
     <h3 class="m-5">Kő papír olló játék</h3>
-    <form action="/game" method="post" class="col-6 offset-3 p-3 bg-light border border-dark rounded">
+    <div class="d-none alert alert-danger">Ebbe a szobába nem lehet csatlakozni!</div>
+    <form class="col-lg-6 col-sm-8 offset-lg-3 offset-sm-2 p-3 bg-light border border-dark rounded">
         <div class="mb-3">
             <label for="player" class="form-label">Name:</label>
             <input type="text" name="player" class="form-control">
         </div>
         <div class="mb-3">
-            <label for="room" class="form-label">Szoba:</label>
+            <label for="room" class="form-label">Játék ID:</label>
             <input type="text" name="room" class="form-control">
         </div>
-        <input type="submit" id="join" class="btn btn-success" value="Join">
+        <input type="button" id="join" class="btn btn-success" value="Join">
     </form>
 </main>
