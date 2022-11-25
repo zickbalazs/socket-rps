@@ -3,6 +3,22 @@
     flex-flow:column wrap;
     min-height: 100vh;
 }
+#paper>.card, 
+#scissors>.card,
+#rock>.card{
+    transition:background-color 0.2s, color 0.1s;
+}
+#paper>.card:hover, 
+#scissors>.card:hover,
+#rock>.card:hover{
+    transition:background-color 0.2s, color 0.1s;
+    background-color:var(--bs-success);
+    color:var(--bs-light);
+}
+.current>.card{
+    background-color:var(--bs-success);
+    color:var(--bs-light);
+}
 main{
     flex:1 1 auto;
 }
