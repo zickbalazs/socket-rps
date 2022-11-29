@@ -1,6 +1,5 @@
 let ejs = require('ejs'), express = require('express'), path = require('path'), app = express(), server = require('http').createServer(app), io = require('socket.io')(server);
 
-
 app.use(require('express-session')({
     resave:true,
     saveUninitialized:true,
@@ -58,7 +57,7 @@ io.on('connection', (socket)=>{
             socket.emit('announce', RoomsData.get(socket.data.room));
             RoomsData.set(socket.data.room, {
                 choosen: [],
-                score: score
+                score: RoomsData.get(socket.data.room).score
             });
         }
         else{
@@ -68,14 +67,9 @@ io.on('connection', (socket)=>{
             })
         }
     })
-    socket.on('dc', (room)=>{
-        console.log('dc')
-        socket.emit('Users', GetRoomUsers(room));
-        socket.to(socket.data.room).emit('Users', GetRoomUsers(room));
-        RoomsData.delete(socket.data.room)
-    })
     socket.on('disconnect', ()=>{
-        RoomsData.delete(socket.data.room)
+        RoomsData.delete(socket.data.room);
+        socket.to(socket.data.room).emit('GameEnd');
     });
 });
 function GetRoomUsers(roomID){
@@ -95,10 +89,12 @@ function EvalScore(array, score){
         case array[0]=='Rock'&&array[1]=='Paper': return [score[0], score[1]+1];
         case array[0]=='Paper'&&array[1]=='Rock': return [score[0], score[1]+1];
         case array[0]=='Scissors'&&array[1]=='Rock': return [score[0], score[1]+1];
+        case array[0]=='Paper'&&array[1]=='Scissors':return [score[0], score[1]+1];
         //p2 conditions
         case array[1]=='Rock'&&array[0]=='Paper': return [score[0]+1, score[1]];
         case array[1]=='Paper'&&array[0]=='Rock': return [score[0]+1, score[1]];
         case array[1]=='Scissors'&&array[0]=='Rock': return [score[0]+1, score[1]];
+        case array[1]=='Paper'&&array[0]=='Scissors':return [score[0]+1, score[1]];
         //errors
         default: return score;
     }
