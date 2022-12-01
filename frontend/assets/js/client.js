@@ -1,6 +1,7 @@
 let socket = io();
 let form = document.querySelector('form');
 let player;
+let opponent;
 let room;
 let selected;
 socket.on('cant',()=>{
@@ -16,19 +17,40 @@ socket.on('can', async ()=>{
     SetFunction();
 });
 socket.on('Users', (data)=>{
+    opponent = data.opponent==player?data.player : data.opponent;
+    $('#messageText').text(opponent);
     document.querySelector('#player').innerHTML = data.player;
-    document.querySelector('#opponent').innerHTML = data.opponent==undefined?"Várakozás ellenfélre...":data.opponent;
+    if (data.opponent==undefined){
+        document.querySelector('#opponent').innerHTML = "Várakozás ellenfélre...";
+    }
+    else{
+        $('#opponent').fadeOut(500, ()=>{
+            document.querySelector('#opponent').innerHTML = opponent;
+            document.querySelector('#OpponentName').innerHTML = opponent;
+            $('#opponent').fadeIn();
+        });
+    }
 })
 socket.on('announce', (data)=>{
-    console.log(data);
-    document.querySelector('#player1').innerHTML = data.score[0];
-    document.querySelector('#player2').innerHTML = data.score[1];
+    $('#pick').fadeIn();
+    $('#message').fadeOut();
+    document.querySelector('#OpponentPick').src = `/img/${data.choosen.filter(e=>e!=selected).length==0 ? selected.toLowerCase() : data.choosen.filter(e=>e!=selected)[0].toLowerCase()}.png`
+    if (data.score[0]!=$('#player1').text()){
+        $('#player1').fadeOut(220, ()=>{
+            document.querySelector('#player1').innerHTML = data.score[0];
+            $('#player1').fadeIn();
+        })
+    }
+    if (data.score[1]!=$('#player2').text()){
+        $('#player2').fadeOut(220, ()=>{
+            document.querySelector('#player2').innerHTML = data.score[1];
+            $('#player2').fadeIn();
+        })
+    }
     document.querySelector('#OpponentPick').innerHTML = `${data.choosen.filter(e=>e!=selected)[0]==undefined?'':(player==document.querySelector('#opponent').innerHTML?document.querySelector('#player').innerHTML+'-':document.querySelector('#opponent').innerHTML+'-')}${data.choosen.filter(e=>e!=selected)[0]==undefined?"Döntetlen":data.choosen.filter(e=>e!=selected)[0]}`;
     
 })
-
 document.querySelector('#join').addEventListener('click', ()=>{
-    console.log('trying to emit')
     socket.emit('roomRequest', {
         user: form.player.value,
         room: form.room.value
@@ -36,7 +58,6 @@ document.querySelector('#join').addEventListener('click', ()=>{
     player = form.player.value;
     room = form.room.value;
 })
-
 function SetUp(){
     socket.emit('GetUsers');
 }
@@ -44,10 +65,37 @@ function SendToServer(which){
     socket.emit('Choose', which);
 }
 function SetFunction(){
-    document.querySelector('#rock').addEventListener('click', ()=>{SendToServer('Rock'); document.querySelector('#rock').classList.add('current'); selected = "Rock"});
-    document.querySelector('#paper').addEventListener('click', ()=>{SendToServer('Paper'); document.querySelector('#paper').classList.add('current'); selected = "Paper"});
-    document.querySelector('#scissors').addEventListener('click', ()=>{SendToServer('Scissors'); document.querySelector('#scissors').classList.add('current'); selected = "Scissors"});
-    document.querySelector('#left').addEventListener('click', ()=>{
-        window.location.reload();        
-    })
+    document.querySelector('#rock').addEventListener('click', ()=>{
+        $('#message').fadeIn();
+        $('#pick').fadeOut();
+        SendToServer('Rock');
+        document.querySelector('#rock').classList.add('current');
+        ClearSelections('rock')
+        selected = "Rock"
+    });
+    document.querySelector('#paper').addEventListener('click', ()=>{
+        $('#pick').fadeOut();
+        $('#message').fadeIn();
+        SendToServer('Paper');
+        document.querySelector('#paper').classList.add('current');
+        ClearSelections('paper')
+        selected = "Paper"
+    });
+    document.querySelector('#scissors').addEventListener('click', ()=>{
+        $('#message').fadeIn();
+        $('#pick').fadeOut();
+        SendToServer('Scissors');
+        ClearSelections('scissors')
+        selected = "Scissors"
+    });
+}
+
+
+
+
+
+function ClearSelections(whichtoactivate){
+    whichtoactivate == 'scissors' ? document.querySelector('#scissors').classList.add('current') : document.querySelector('#scissors').classList.remove('current');
+    whichtoactivate == 'rock' ? document.querySelector('#rock').classList.add('current') : document.querySelector('#rock').classList.remove('current');
+    whichtoactivate == 'paper' ? document.querySelector('#paper').classList.add('current') : document.querySelector('#paper').classList.remove('current');
 }

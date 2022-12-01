@@ -6,10 +6,12 @@ app.use(require('express-session')({
     secret:'secret'
 }))
 app.use(express.urlencoded({extended:false}));
+app.use('/img', express.static(path.join(__dirname, './frontend/assets/img')))
 app.use('/css', express.static(path.join(__dirname, './frontend/assets/css')))
 app.use('/js', express.static(path.join(__dirname, './frontend/assets/js')))
 app.use('/bootstrap', express.static(path.join(__dirname, './node_modules/bootstrap/dist/')));
 app.use('/socketio', express.static(path.join(__dirname, './node_modules/socket.io/client-dist')));
+app.use('/jquery', express.static(path.join(__dirname, './node_modules/jquery/dist')))
 
 app.get('/game', (req,res)=>{
     res.status(200).sendFile(path.join(__dirname, './frontend/assets/html/game.html'));

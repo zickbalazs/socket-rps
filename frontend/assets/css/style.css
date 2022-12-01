@@ -3,6 +3,9 @@
     flex-flow:column wrap;
     min-height: 100vh;
 }
+#pick, #message{
+    display:none;
+}
 #paper>.card, 
 #scissors>.card,
 #rock>.card{
