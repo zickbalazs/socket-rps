@@ -12,6 +12,7 @@ app.use('/js', express.static(path.join(__dirname, './frontend/assets/js')))
 app.use('/bootstrap', express.static(path.join(__dirname, './node_modules/bootstrap/dist/')));
 app.use('/socketio', express.static(path.join(__dirname, './node_modules/socket.io/client-dist')));
 app.use('/jquery', express.static(path.join(__dirname, './node_modules/jquery/dist')))
+app.use('/bootstrap-icons', express.static(path.join(__dirname, './node_modules/bootstrap-icons')));
 
 app.get('/game', (req,res)=>{
     res.status(200).sendFile(path.join(__dirname, './frontend/assets/html/game.html'));
@@ -45,6 +46,13 @@ io.on('connection', (socket)=>{
     socket.on('GetUsers', ()=>{
         socket.emit('Users', GetRoomUsers(socket.data.room));
         socket.to(socket.data.room).emit('Users', GetRoomUsers(socket.data.room));
+    })
+    socket.on('quit', ()=>{
+        console.log(io.sockets.adapter.rooms.get(socket.data.room))
+        socket.leave(io.sockets.adapter.rooms.get(socket.data.room));
+        console.log(io.sockets.adapter.rooms.get(socket.data.room))
+        socket.to(io.sockets.adapter.rooms.get(socket.data.room)).emit('Users', GetRoomUsers(socket.data.room));
+        //socket.leave(socket.data.room)
     })
     socket.on('Choose', (which)=>{
         let chosen = RoomsData.get(socket.data.room)==undefined?[]:RoomsData.get(socket.data.room).choosen;

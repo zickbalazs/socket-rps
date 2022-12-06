@@ -3,7 +3,7 @@
     flex-flow:column wrap;
     min-height: 100vh;
 }
-#pick, #message{
+#pick, #message, #gameitems{
     display:none;
 }
 #paper>.card, 

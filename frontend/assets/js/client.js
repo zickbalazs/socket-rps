@@ -8,7 +8,8 @@ socket.on('cant',()=>{
     document.querySelector('.alert').classList.remove('d-none');
 });
 socket.on('GameEnd', ()=>{
-    console.log('asd');
+    alert('Az ellenfeled kilépett!');
+    $('#gameitems').fadeOut();
 })
 socket.on('can', async ()=>{
     let htmldata = await (fetch('http://localhost:8080/game').then(r=>r.text()).then(data=>{return data}));
@@ -17,17 +18,19 @@ socket.on('can', async ()=>{
     SetFunction();
 });
 socket.on('Users', (data)=>{
-    opponent = data.opponent==player?data.player : data.opponent;
+    opponent = data.opponent == player ? data.player : data.opponent;
     $('#messageText').text(opponent);
     document.querySelector('#player').innerHTML = data.player;
     if (data.opponent==undefined){
         document.querySelector('#opponent').innerHTML = "Várakozás ellenfélre...";
     }
     else{
-        $('#opponent').fadeOut(500, ()=>{
-            document.querySelector('#opponent').innerHTML = opponent;
+        $('#opponent').fadeOut(()=>{
+            document.querySelector('#opponent').innerHTML = data.opponent;
             document.querySelector('#OpponentName').innerHTML = opponent;
-            $('#opponent').fadeIn();
+            $('#opponent').fadeIn(()=>{
+                $('#gameitems').fadeIn();
+            });
         });
     }
 })
@@ -88,6 +91,11 @@ function SetFunction(){
         ClearSelections('scissors')
         selected = "Scissors"
     });
+    document.querySelector('#quit').addEventListener('click', ()=>{
+        if (confirm('Biztos ki akarsz lépni?')){
+            window.location.reload();
+        }
+    })
 }
 
 
